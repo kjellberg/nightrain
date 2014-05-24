@@ -94,7 +94,8 @@ class Compiler:
             "php.ini",
             "www",
             "settings.ini",
-            "icon.png"
+            "icon.png",
+            "LICENSE"
         ]
 
         for item in items:
