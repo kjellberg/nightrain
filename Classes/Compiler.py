@@ -65,7 +65,17 @@ class Compiler:
         # compile PHP
         phpSourceDir = "%s/%s" % (phpDir, "php-5.5.12")
 
-        configureCommand = "cd %s && ./configure --prefix=%s" % (phpSourceDir, self.php_linux_binary_dir)
+        configureCommand = "cd %s && ./configure --prefix=%s " \
+                           "--enable-bcmath " \
+                           "--enable-calendar " \
+                           "--enable-mbstring " \
+                           "--with-curl " \
+                           "--with-gd " \
+                           "--with-mcrypt " \
+                           "--with-mysql " \
+                           "--with-pdo-mysql " \
+                           "--with-sqlite3" \
+                           % (phpSourceDir, self.php_linux_binary_dir)
         call(configureCommand, shell=True)
 
         makeCommand = "cd %s && make && make install" % (phpSourceDir)
@@ -142,6 +152,24 @@ class Compiler:
                 return False
         else:
             return False
+
+    def copyPHPINILinux(self):
+        src = "%s/%s" % (self.resources_dir, "php.ini")
+        destination = "%s/%s/%s/%s/%s" % (self.output_dir, "lib", "php", "bin", "php.ini")
+        try:
+            shutil.copyfile(src, destination)
+            print "Successfully copied %s to %s" % (src, destination)
+            return True
+        except:
+            return False
+
+    # todo copy php ini windows
+    def copyPHPINIWindows(self):
+        pass
+
+    # todo copy php ini mac
+    def copyPHPINIMac(self):
+        pass
 
     def cleanDist(self):
 

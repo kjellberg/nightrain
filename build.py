@@ -35,6 +35,7 @@ if compiler.isWindows():
 
 if compiler.isLinux():
     compiler.copyPHPLinux()
+    compiler.copyPHPINILinux()
 
 if compiler.isMac():
     compiler.copyPHPMac()
