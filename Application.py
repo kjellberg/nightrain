@@ -13,8 +13,14 @@ php_path = str(program_settings.read_setting("php_path"))
 port = str(program_settings.read_setting("port"))
 webroot = str(program_settings.read_setting("webroot"))
 wait_time = int(program_settings.read_setting("wait_time"))
-maximized = bool(program_settings.read_setting("maximized"))
-fullscreen = bool(program_settings.read_setting("fullscreen"))
+if str(program_settings.read_setting("maximized")) == "true":
+    maximized = True
+else:
+    maximized = False
+if str(program_settings.read_setting("fullscreen")) == "true":
+    fullscreen = True
+else:
+    fullscreen = False
 width = int(program_settings.read_setting("width"))
 height = int(program_settings.read_setting("height"))
 
