@@ -93,7 +93,8 @@ class Compiler:
         items = [
             "php.ini",
             "www",
-            "settings.ini"
+            "settings.ini",
+            "icon.png"
         ]
 
         for item in items:

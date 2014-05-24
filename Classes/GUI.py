@@ -43,6 +43,9 @@ class WebBrowser(wx.Frame):
         self.SetSizer(sizer)
         self.SetSize((width, height))
 
+        self.icon = wx.Icon("./icon.png", wx.BITMAP_TYPE_PNG)
+        self.SetIcon(self.icon)
+
         self.Bind(wx.EVT_CLOSE, self.event_browser_closed)
         self.Bind(wx.EVT_CHAR_HOOK, self.handle_keystrokes)
         self.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.title_changed, self.browser)

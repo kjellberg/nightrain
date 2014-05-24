@@ -4,9 +4,6 @@ compiler = Compiler("./dist", "./nrtmp", "./Resources")
 
 compiler.compileNightrainLinux()
 
-import sys
-sys.exit()
-
 # clean output folder
 compiler.cleanDist()
 

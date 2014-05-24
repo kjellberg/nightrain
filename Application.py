@@ -13,6 +13,10 @@ php_path = str(program_settings.read_setting("php_path"))
 port = str(program_settings.read_setting("port"))
 webroot = str(program_settings.read_setting("webroot"))
 wait_time = int(program_settings.read_setting("wait_time"))
+maximized = bool(program_settings.read_setting("maximized"))
+fullscreen = bool(program_settings.read_setting("fullscreen"))
+width = int(program_settings.read_setting("width"))
+height = int(program_settings.read_setting("height"))
 
 program_php = PHP()
 program_gui = GUI()
@@ -21,9 +25,9 @@ if program_php.found(php_path):
     if program_php.valid(php_path):
         program_php.start_server_in_a_thread(php_path, port, webroot)
         if wait_time:
-            print "Going to delay the execution by %s seconds" % (wait_time)
+            print "Going to delay the execution by %s seconds" % wait_time
             program_settings.pause_execution(wait_time)
-        program_gui.show_browser(port)
+        program_gui.show_browser(maximized, fullscreen, width, height, port)
         program_php.stop_server_in_a_thread()
     else:
         program_gui.show_error("PHP Version is Invalid", "This Version of PHP is Not Supported")
