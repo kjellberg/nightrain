@@ -1,6 +1,7 @@
 __author__ = 'naetech'
 
 import ConfigParser
+import time
 
 class Settings:
 
@@ -26,3 +27,6 @@ class Settings:
                 return False
             else:
                 return value
+
+    def pause_execution(self, seconds):
+        time.sleep(seconds)

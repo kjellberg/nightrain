@@ -7,7 +7,7 @@ import wx.html
 import wx.html2
 import wx.lib.wxpTag
 
-from Classes.PHP import PHPServerThread
+from operator import or_
 
 class GUI:
 
@@ -18,36 +18,52 @@ class GUI:
         dlg.Destroy()
         app.MainLoop()
 
-    def show_browser(self, php_path, port, webroot, wait_time):
+    def show_browser(self, maximized, fullscreen, width, height, port):
         app = wx.App()
-        dialog = WebBrowser(php_path, port, webroot, wait_time, None, -1)
-        dialog.browser.LoadURL("http://localhost:%s" % (port))
-        dialog.Show()
+        browser_window = WebBrowser(width, height, None, -1)
+        browser_window.browser.LoadURL("http://localhost:%s" % (port))
+
+        if maximized:
+            browser_window.Maximize()
+
+        browser_window.Show()
+
+        if fullscreen:
+            browser_window.ShowFullScreen(True)
+
         app.MainLoop()
 
-class WebBrowser(wx.Dialog):
+class WebBrowser(wx.Frame):
 
-    program_php_server_thread = None
-
-    def __init__(self, php_path, port, webroot, wait_time, *args, **kwds):
-        self.program_php_server_thread = PHPServerThread(php_path, port, webroot)
-        self.program_php_server_thread.daemon = True
-        self.program_php_server_thread.start()
-        if wait_time:
-            print "Going to delay the execution by %s seconds" % (wait_time)
-            self.program_php_server_thread.pause_execution(wait_time)
-
-        wx.Dialog.__init__(self, *args, **kwds)
+    def __init__(self, width, height, *args, **kwds):
+        wx.Frame.__init__(self, *args, **kwds)
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.browser = wx.html2.WebView.New(self)
         sizer.Add(self.browser, 1, wx.EXPAND, 10)
         self.SetSizer(sizer)
-        self.SetSize((700, 700))
+        self.SetSize((width, height))
+
         self.Bind(wx.EVT_CLOSE, self.event_browser_closed)
+        self.Bind(wx.EVT_CHAR_HOOK, self.handle_keystrokes)
+        self.Bind(wx.html2.EVT_WEBVIEW_TITLE_CHANGED, self.title_changed, self.browser)
+
+    def title_changed(self, event):
+        self.SetTitle(event.GetString())
+
+    def handle_keystrokes(self, event):
+        key_code = event.GetKeyCode()
+        if key_code == wx.WXK_ESCAPE:
+            self.ShowFullScreen(False)
+        elif key_code == wx.WXK_F11:
+            if self.IsFullScreen():
+                self.ShowFullScreen(False)
+            else:
+                self.ShowFullScreen(True)
+        else:
+            event.Skip()
 
     def event_browser_closed(self, event):
-        self.Close(True)
-        self.program_php_server_thread.stop()
+        self.Destroy()
 
 class ErrorDialog(wx.Dialog):
     text = '''

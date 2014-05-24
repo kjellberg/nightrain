@@ -4,12 +4,13 @@ import os
 import subprocess
 import re
 import threading
-import time
-import sys
+import signal
 
 from threading import Thread
 
 class PHP:
+
+    program_php_server_thread = None
 
     def found(self, php_path):
 
@@ -33,16 +34,24 @@ class PHP:
         else:
             return False
 
-    def start_server(self, php_path, port, webroot):
-        command = '{0} -S localhost:{1} -t {2}'.format(php_path, port, webroot)
-        # os.system(command)
-        subprocess.call(command, shell=True)
+    def start_server_in_a_thread(self, php_path, port, webroot):
+        self.program_php_server_thread = PHPServerThread(php_path, port, webroot)
+        self.program_php_server_thread.start()
+
+    def stop_server_in_a_thread(self):
+        print "Trying to close the PHP process on %s" % (self.program_php_server_thread.php_server_process.pid)
+        try:
+            os.killpg(self.program_php_server_thread.php_server_process.pid, signal.SIGTERM)
+        except:
+            print "Something weird happened"
 
 class PHPServerThread (threading.Thread):
 
     php_path = None
     port = None
     webroot = None
+    php_executable = None
+    php_server_process = None
 
     def __init__(self, php_path, port, webroot):
         threading.Thread.__init__(self)
@@ -50,14 +59,9 @@ class PHPServerThread (threading.Thread):
         self.port = port
         self.webroot = webroot
 
+    def start_server(self):
+        command = '{0} -S localhost:{1} -t {2}'.format(self.php_path, self.port, self.webroot)
+        self.php_server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+
     def run(self):
-        php_executable = PHP()
-        if php_executable.found(self.php_path):
-            if php_executable.valid(self.php_path):
-                php_executable.start_server(self.php_path, self.port, self.webroot)
-
-    def stop(self):
-        sys.exit()
-
-    def pause_execution(self, seconds):
-        time.sleep(seconds)
+        self.start_server()

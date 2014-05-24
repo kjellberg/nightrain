@@ -19,7 +19,12 @@ program_gui = GUI()
 
 if program_php.found(php_path):
     if program_php.valid(php_path):
-        program_gui.show_browser(php_path, port, webroot, wait_time)
+        program_php.start_server_in_a_thread(php_path, port, webroot)
+        if wait_time:
+            print "Going to delay the execution by %s seconds" % (wait_time)
+            program_settings.pause_execution(wait_time)
+        program_gui.show_browser(port)
+        program_php.stop_server_in_a_thread()
     else:
         program_gui.show_error("PHP Version is Invalid", "This Version of PHP is Not Supported")
 else:
