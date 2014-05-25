@@ -107,7 +107,6 @@ class Compiler:
                            "--enable-mbstring " \
                            "--with-curl " \
                            "--with-gd " \
-                           "--with-mcrypt " \
                            "--with-mysql " \
                            "--with-pdo-mysql " \
                            "--with-sqlite3" \
