@@ -123,7 +123,8 @@ class Compiler:
         spec_path = "--specpath=%s/%s" % (self.build_dir, "specs")
         application_icon = "--icon=%s/%s" % (self.resources_dir, "icon.ico")
         # fixme When using the -w option, the final executable causes error
-        call(["pyinstaller", "--clean", "-y", "-F", spec_path, application_icon, "-n", "nightrain", "Application.py"])
+        call(["pyinstaller.py", "--clean", "-y", "-F", spec_path, application_icon, "-n", "nightrain", "Application.py"],
+             shell=True)
         self.clean_unncessary_files()
 
     def compile_nightrain_linux(self):
@@ -172,7 +173,6 @@ class Compiler:
                 return False
 
     def copy_php_windows(self):
-        print self.php_windows_binary_dir
         destination = "%s/%s/%s" % (self.output_dir, "lib", "php")
         if os.path.exists(self.php_windows_binary_dir):
             try:
