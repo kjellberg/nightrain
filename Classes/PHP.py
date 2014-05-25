@@ -6,6 +6,8 @@ import re
 import threading
 import signal
 
+from Compiler import Compiler
+
 from threading import Thread
 
 class PHP:
@@ -40,10 +42,10 @@ class PHP:
 
     def stop_server_in_a_thread(self):
         print "Trying to close the PHP process on %s" % (self.program_php_server_thread.php_server_process.pid)
-        try:
+        if Compiler.is_linux() or Compiler.is_mac():
             os.killpg(self.program_php_server_thread.php_server_process.pid, signal.SIGTERM)
-        except:
-            print "Something weird happened"
+        else:
+            os.system('taskkill /f /im php.exe')
 
 class PHPServerThread (threading.Thread):
 
@@ -61,7 +63,10 @@ class PHPServerThread (threading.Thread):
 
     def start_server(self):
         command = '{0} -S localhost:{1} -t {2}'.format(self.php_path, self.port, self.webroot)
-        self.php_server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        if Compiler.is_linux() or Compiler.is_mac():
+            self.php_server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        elif Compiler.is_windows():
+            self.php_server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 
     def run(self):
         self.start_server()

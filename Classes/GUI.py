@@ -7,7 +7,7 @@ import wx.html
 import wx.html2
 import wx.lib.wxpTag
 
-from operator import or_
+from Compiler import Compiler
 
 class GUI:
 
@@ -43,8 +43,9 @@ class WebBrowser(wx.Frame):
         self.SetSizer(sizer)
         self.SetSize((width, height))
 
-        self.icon = wx.Icon("./icon.png", wx.BITMAP_TYPE_PNG)
-        self.SetIcon(self.icon)
+        if Compiler.is_linux():
+            self.icon = wx.Icon("./icon.png", wx.BITMAP_TYPE_PNG)
+            self.SetIcon(self.icon)
 
         self.Bind(wx.EVT_CLOSE, self.event_browser_closed)
         self.Bind(wx.EVT_CHAR_HOOK, self.handle_keystrokes)
