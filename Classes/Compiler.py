@@ -26,9 +26,11 @@ class Compiler:
         else:
             return False
 
-    # todo check for windows
     def isWindows(self):
-        pass
+        if "win" in sys.platform:
+            return True
+        else:
+            return False
 
     # todo check for mac
     def isMac(self):
@@ -85,7 +87,10 @@ class Compiler:
 
     # todo compile nr for windows
     def compileNightrainWindows(self):
-        pass
+        self.cleanUnncessaryFiles()
+        spec_path = "--specpath=%s/%s" % (self.build_dir, "specs")
+        call(["pyinstaller", "--clean", "-w", "-y", "-F", spec_path, "-n", "nightrain", "Application.py"])
+        self.cleanUnncessaryFiles()
 
     # todo compile nr for linux
     def compileNightrainLinux(self):
