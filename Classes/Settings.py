@@ -48,6 +48,7 @@ class Settings:
             config.set("Application", "php_path", "lib\\php\\php.exe")
 
         config.set("Application", "; full path or the relative path to the directory from where")
+        config.set("Application", "; the server will load your PHP files")
         if Compiler.Compiler.is_linux() or Compiler.Compiler.is_mac():
             config.set("Application", "webroot", "./www")
         else:
@@ -66,9 +67,10 @@ class Settings:
         config.set("Application", "; default window status (true or false)")
         config.set("Application", "maximized", False)
 
-        config.set("Application", "; full screen (true or false)")
+        config.set("Application", "; start the application in full screen (true or false)")
         config.set("Application", "; you can press 'F11' to toggle full screen as well while")
         config.set("Application", "; the application is running")
+        config.set("Application", "; this feature is for windows only")
         config.set("Application", "fullscreen", False)
 
         config.set("Application", "; amount of time to wait before showing the application GUI")
