@@ -33,6 +33,9 @@ class GUI:
 
         app.MainLoop()
 
+# update the settings file to allow the user to change the full screen toggle
+# update the settings file to allow the user to change the button to exit full screen
+
 class WebBrowser(wx.Frame):
 
     def __init__(self, width, height, *args, **kwds):

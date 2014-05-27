@@ -179,6 +179,53 @@ class Compiler:
         call(["pyinstaller.py", "--clean", "-w", "-y", "-F", spec_path, application_icon, "-n", "nightrain", "Application.py"])
         self.clean_unncessary_files()
 
+    def make_dir(self, path):
+        if not os.path.exists(path):
+            try:
+                os.mkdir(path)
+                print "Successfully created: %s" % path
+                return True
+            except:
+                print "Could not create %s" % path
+                return False
+        else:
+            return False
+
+    def move_file(self, source, destination):
+        if os.path.exists(source):
+            try:
+                shutil.move(source, destination)
+                print "Successfully moved %s to %s" % (source, destination)
+                return True
+            except:
+                print "Could not move %s to %s" % (source, destination)
+                return False
+        else:
+            return False
+
+    def copy_file(self, source, destination):
+        success_msg = "Successfully copied %s to %s" % (source, destination)
+        failure_msg = "Could not copy %s to %s" % (source, destination)
+
+        if os.path.exists(source) and os.path.isdir(source):
+            try:
+                shutil.copytree(source, destination)
+                print success_msg
+                return True
+            except:
+                print failure_msg
+                return False
+        elif os.path.exists(source) and os.path.isfile(source):
+            try:
+                shutil.copyfile(source, destination)
+                print success_msg
+                return True
+            except:
+                print failure_msg
+                return False
+        else:
+            return False
+
     def copy_resources(self, custom_output_dir=None):
 
         items = [
@@ -230,18 +277,10 @@ class Compiler:
         else:
             return False
 
-    def copy_php_mac(self):
-        destination = "%s/nightrain.app/Contents/MacOS/%s/%s" % (self.output_dir, "lib", "php")
-        if os.path.exists(self.php_mac_binary_dir):
-            try:
-                shutil.copytree(self.php_mac_binary_dir, destination)
-                print "Successfully copied %s to %s" % (self.php_mac_binary_dir, destination)
-                return True
-            except:
-                print "Could not copy %s to %s" % (self.php_mac_binary_dir, destination)
-                return False
-        else:
+    def copy_php_mac(self, destination_dir):
+        if not self.copy_file(self.php_mac_binary_dir, destination_dir):
             return False
+        return True
 
     def copy_php_linux(self):
         destination = "%s/%s/%s" % (self.output_dir, "lib", "php")
@@ -292,9 +331,9 @@ class Compiler:
         else:
             print "Could not find %s" % php_ini_src
 
-    # todo copy php ini mac
-    def copy_php_ini_mac(self):
-        pass
+    def copy_php_ini_mac(self, dest):
+        source = "%s/settings.ini" % self.resources_dir
+        return self.copy_file(source, dest)
 
     def clean_dist(self):
 
@@ -308,6 +347,10 @@ class Compiler:
 
         if os.path.exists(self.build_dir):
             shutil.rmtree(self.build_dir)
+
+    def remove_file(self, file_path):
+        if os.path.exists(file_path):
+            shutil.rmtree(file_path)
 
     def get_php_ini_dest(self):
         if self.is_linux() or self.is_mac():
