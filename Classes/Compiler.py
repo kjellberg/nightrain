@@ -16,6 +16,7 @@ class Compiler:
     tmp_dir = "./nrtmp"
     resources_dir = "./resources"
     php_linux_binary_dir = "/home/naetech/php"
+    php_mac_binary_dir = "/Users/naetech/php"
     php_windows_binary_dir = "C:\\nightrain_php"
 
     def __init__(self, output_dir, tmp_dir, resources_dir):
@@ -34,17 +35,18 @@ class Compiler:
 
     @staticmethod
     def is_windows():
-        if "win" in sys.platform:
+        if "win" in sys.platform and "darwin" not in sys.platform:
             return True
         else:
             return False
 
-    # todo check for mac
     @staticmethod
     def is_mac():
-        pass
+        if "darwin" in sys.platform:
+            return True
+        else:
+            return False
 
-    # todo compile php for windows
     def compile_php_windows(self):
         # remove the old binary
         if os.path.exists(self.php_windows_binary_dir):
@@ -74,9 +76,46 @@ class Compiler:
 
         return True
 
-    # todo compile php for mac
     def compile_php_mac(self):
-        pass
+        # remove the old binary
+        if os.path.exists(self.php_mac_binary_dir):
+            shutil.rmtree(self.php_mac_binary_dir)
+
+        # create a random tmp directory
+        if os.path.exists(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
+
+        os.mkdir(self.tmp_dir)
+
+        # download the latest version of PHP
+        php_tar_file_save_location = "%s/%s" % (self.tmp_dir, "php5512.tar.gz")
+        # fixme add a config file so the developers can update this link without modifying the source codes
+        php_tar_download_link = "http://us1.php.net/get/php-5.5.12.tar.gz/from/this/mirror"
+        self.download_file(php_tar_download_link, php_tar_file_save_location)
+
+        php_extracted_dir = "%s/%s" % (self.tmp_dir, "php5512")
+        os.mkdir(php_extracted_dir)
+        call(["tar", "-C", php_extracted_dir, "-zxvf", php_tar_file_save_location])
+
+        # compile PHP
+        php_source_dir = "%s/%s" % (php_extracted_dir, "php-5.5.12")
+
+        configure_command = "cd %s && ./configure --prefix=%s " \
+                           "--enable-bcmath " \
+                           "--enable-calendar " \
+                           "--enable-mbstring " \
+                           "--with-curl " \
+                           "--with-gd " \
+                           "--with-mysql " \
+                           "--with-pdo-mysql " \
+                           "--with-sqlite3" \
+                           % (php_source_dir, self.php_mac_binary_dir)
+        call(configure_command, shell=True)
+
+        make_command = "cd %s && make && make install" % php_source_dir
+        call(make_command, shell=True)
+
+        return True
 
     def compile_php_linux(self):
 
@@ -133,11 +172,14 @@ class Compiler:
         call(["pyinstaller", "--clean", "-y", "-F", spec_path, "-n", "nightrain", "Application.py"])
         self.clean_unncessary_files()
 
-    # todo compile nr for mac
     def compile_nightrain_mac(self):
-        pass
+        self.clean_unncessary_files()
+        spec_path = "--specpath=%s/%s" % (self.build_dir, "specs")
+        application_icon = "--icon=%s/%s" % (self.resources_dir, "icon.ico")
+        call(["pyinstaller.py", "--clean", "-w", "-y", "-F", spec_path, application_icon, "-n", "nightrain", "Application.py"])
+        self.clean_unncessary_files()
 
-    def copy_resources(self):
+    def copy_resources(self, custom_output_dir=None):
 
         items = [
             "www",
@@ -146,11 +188,14 @@ class Compiler:
         ]
 
         for item in items:
-            if item == "icon.png" and self.is_windows():
+            if item == "icon.png" and (self.is_windows() or self.is_mac()):
                 continue
 
             source = "%s/%s" % (self.resources_dir, item)
-            destination = "%s/%s" % (self.output_dir, item)
+            if not custom_output_dir:
+                destination = "%s/%s" % (self.output_dir, item)
+            else:
+                destination = "%s/%s" % (custom_output_dir, item)
             if os.path.exists(source):
                 error = "Could not copy item %s" % (item)
                 success = "Successfully copied %s to %s" % (source, destination)
@@ -185,9 +230,18 @@ class Compiler:
         else:
             return False
 
-    #todo copy php mac
     def copy_php_mac(self):
-        pass
+        destination = "%s/nightrain.app/Contents/MacOS/%s/%s" % (self.output_dir, "lib", "php")
+        if os.path.exists(self.php_mac_binary_dir):
+            try:
+                shutil.copytree(self.php_mac_binary_dir, destination)
+                print "Successfully copied %s to %s" % (self.php_mac_binary_dir, destination)
+                return True
+            except:
+                print "Could not copy %s to %s" % (self.php_mac_binary_dir, destination)
+                return False
+        else:
+            return False
 
     def copy_php_linux(self):
         destination = "%s/%s/%s" % (self.output_dir, "lib", "php")
@@ -265,3 +319,9 @@ class Compiler:
 
     def get_settings_ini_dest(self):
         return "%s/%s" % (self.output_dir, "settings.ini")
+
+    def download_file(self, download_link, where_to_save_file_including_file_name):
+        print "Downloading %s" % download_link
+        urllib.urlretrieve(download_link, where_to_save_file_including_file_name)
+        print "Finished downloading %s" % download_link
+        print "File saved to %s" % download_link

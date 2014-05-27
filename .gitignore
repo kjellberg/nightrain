@@ -1,8 +1,9 @@
 *.pyc
 dist/
 tester.py
-nightrain_python.iml
-nightrain_python.ipr
-nightrain_python.iws
+nightrain*.iml
+nightrain*.ipr
+nightrain*.iws
 nrtmp/
 .idea/
+.DS_Store

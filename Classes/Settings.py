@@ -6,8 +6,7 @@ from tempfile import mkstemp
 from shutil import move
 from os import remove, close
 
-import ConfigParser
-import time
+import ConfigParser, time, inspect, os
 
 class Settings:
 
