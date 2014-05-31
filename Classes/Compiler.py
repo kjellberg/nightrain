@@ -59,7 +59,7 @@ class Compiler:
         os.mkdir(self.tmp_dir)
 
         # download the latest version of PHP
-        php_file_zip_download_link = "http://windows.php.net/downloads/releases/php-5.5.12-nts-Win32-VC11-x86.zip"
+        php_file_zip_download_link = "http://windows.php.net/downloads/releases/archives/php-5.5.12-nts-Win32-VC11-x86.zip"
         php_file_zip_dest = "%s/%s" % (self.tmp_dir, "php-5.5.12-Win32-VC11-x86.zip")
         print "Downloading %s" % php_file_zip_download_link
         urllib.urlretrieve(php_file_zip_download_link, php_file_zip_dest)
