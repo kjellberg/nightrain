@@ -18,13 +18,13 @@ PHP Nightrain is a packager written in Python for the PHP Programming Language. 
 
 ## Download Binaries
 
-You can download precompiled binaries for Mac, Windows & Linux from the page below:
+You can download pre-compiled binaries/executables for Mac, Windows & Linux from the page below:
 
 [Download PHP Nightrain Binaries](http://www.naetech.com/php-nightrain)
 
 ## Sample Outputs
 
-Here is a sample output of the PHP Nightrain end product on various operating systems.
+Listed below are sample output of the PHP Nightrain end product on various operating systems.
 
 ### Windows
 
